@@ -5,6 +5,8 @@ Name: Aditya Sahu (Addy)
 
 University: University of Massachusetts Dartmouth
 
+> Interested in a full-time opportunity with Intus Care.
+
 # Submission
 
 ### Important Assumptions and Comments
@@ -19,7 +21,7 @@ University: University of Massachusetts Dartmouth
 
 + In the given file icdCode.js, some codes are generic so that when given in the input are fetching multiple matched diagnoses. For example, if icdCode input is A15, then it returns a list of all ICD-10-CM codes beginning with "A15". As a consequence of this assumption, the ppt list view page shows the input icdCode count (A15, would be counted as 1) but in the focus mode all the multiple matches returned by the API are shown. Since it was not specifically mentioned how to address this issue, I've taken the liberty to make it so. 
 
-+ The table appears different than the one given in the wireframe. I tried the card-styled but did not look very good with the ppt search feature, so I improved it in such a way that it DOES NOT affect the functionality 
++ The table appears different than the one given in the wireframe. I tried the card-styled but was not going very well with my ppt search feature, so I altered it in such a way that it looks clean and it DOES NOT affect the functionality. I hope it is alright. 
 
 + I have taken help of AI to optimize styling build on top of the bonus features. However, I can explain each line of code.  
 
