@@ -8,7 +8,7 @@ import { CodeDiagnosis } from "@/app/types/codeDiagnosis";
 const fetchParticipantDetails = async (diagnoses: Diagnosis[] = []) => {
   let resp: CodeDiagnosis[] = [];
   let i: number = 0;
-  
+
   try {
     const getFormattedData = async () => {
       await Promise.all(diagnoses.map(async (ele) => {
@@ -16,7 +16,7 @@ const fetchParticipantDetails = async (diagnoses: Diagnosis[] = []) => {
         const data = await fetch(url);
         const dataJson = await data.json();
         const size = dataJson.length;
-        
+
         for (const codeDesc of dataJson[size - 1]) {
           resp.push({ id: i, icdCode: codeDesc[0], description: codeDesc[1] });
           i++;
@@ -24,7 +24,7 @@ const fetchParticipantDetails = async (diagnoses: Diagnosis[] = []) => {
         return resp;
       }));
     };
-    
+
     await getFormattedData();
     return resp;
   } catch (err) {
@@ -104,36 +104,41 @@ export default function Participants() {
     <div className="p-10">
       {selectedParticipant ? (
         <>
-          <div className="p-5">
-            <button
-              onClick={handleBackButtonClick}
-              className="text-white bg-[#4D7EF8] hover:bg-[#3A6AD4] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
-            >
-              &lt; Back
-            </button>
-          </div>
-          <div className="bg-white shadow-xl rounded-xl p-5">
-            <h2 className="font-semibold text-lg">
-              {selectedParticipant.firstName} {selectedParticipant.lastName}
-            </h2>
-            <hr />
-            <div className="mt-4">
-              {participantDetails.length > 0 ? (
-                participantDetails.map((keyval) => (
-                  <div key={keyval.id} className="flex justify-between items-center bg-gray-50 border border-gray-300 rounded-lg p-4 mb-2">
-                    <span className="text-gray-700 font-semibold">{keyval.description}</span>
-                    <span className="text-blue-600 font-semibold">{keyval.icdCode}</span>
+          <div className="flex space-x-2">
+            <div className="w-[30%]">
+              <button
+                onClick={handleBackButtonClick}
+                className="text-white bg-primary-IntusBlue hover:bg-[#3A6AD4] focus:ring-4 focus:outline-none focus:ring-blue-300 font-normal-15 rounded-lg text-sm px-5 py-2.5 text-center items-center"
+              >
+                &lt; Back
+              </button>
+            </div>
+            <div className="bg-white shadow-xl rounded-xl p-4 min-w-[90%]">
+              <h2 className="font-bold-28 text-lg text-grayscale-Body">
+                {selectedParticipant.firstName} {selectedParticipant.lastName}
+              </h2>
+              <hr className="border-t-2 border-grayscale-Labels w-[95%] mx-auto mt-5 mb-5" />
+              <div className="mt-2">
+                {participantDetails.length > 0 ? (
+                  <div>
+                    <p className="text-grayscale-Labels pb-5 mb-2">ICD Codes ({participantDetails.length})</p>
+                    {participantDetails.map((keyval) => (
+                      <div key={keyval.id} className="flex justify-between items-center bg-grayscale-InputBlack p-5 mb-4 ml-10 ">
+                        <span className="text-grayscale-Black font-semibold">{keyval.description}</span>
+                        <span className="font-semibold text-grayscale-Body">{keyval.icdCode}</span>
+                      </div>
+                    ))}
                   </div>
-                ))
-              ) : (
-                <p className="mt-2 text-gray-500">No ICD details available.</p>
-              )}
+                ) : (
+                  <p className="mt-2 text-grayscale-Labels">No ICD details available.</p>
+                )}
+              </div>
             </div>
           </div>
         </>
       ) : (
         <>
-          <h2 className="font-semibold text-blue-900 text-2xl">Participants</h2>
+          <h2 className="font-bold-28 text-primary-IntusNavy text-2xl">Participants</h2>
           <br />
           <div className="mb-4">
             <input
@@ -148,7 +153,7 @@ export default function Participants() {
             <table className="min-w-full table-auto bg-white border border-gray-300">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="px-4 py-2 text-left cursor-pointer font-semibold text-gray-700" onClick={() => handleSort("name")}>
+                  <th className="px-4 py-2 text-left cursor-pointer font-semibold text-grayscale-Labels" onClick={() => handleSort("name")}>
                     <div className="flex items-center">
                       Participant Name
                       {sortBy === "name" && (
@@ -156,7 +161,7 @@ export default function Participants() {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-2 text-left cursor-pointer font-semibold text-gray-700" onClick={() => handleSort("icdCount")}>
+                  <th className="px-4 py-2 text-left cursor-pointer font-semibold text-grayscale-Labels" onClick={() => handleSort("icdCount")}>
                     <div className="flex items-center">
                       ICD Codes
                       {sortBy === "icdCount" && (
@@ -175,9 +180,9 @@ export default function Participants() {
                   </tr>
                 ) : (
                   currentParticipants.map((participant, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => handleRowClick(participant)}>
-                      <td className="px-4 py-2">{participant.firstName} {participant.lastName}</td>
-                      <td className="px-4 py-2">{participant.diagnoses.length}</td>
+                    <tr key={index} className="border-b hover:bg-blue-200 cursor-pointer" onClick={() => handleRowClick(participant)}>
+                      <td className="text-grayscale-Body px-4 py-2">{participant.firstName} {participant.lastName}</td>
+                      <td className="text-primary-IntusNavy px-4 py-2">{participant.diagnoses.length}</td>
                     </tr>
                   ))
                 )}

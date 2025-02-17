@@ -11,6 +11,18 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary:{
+          IntusBlue: "#4D7EF8",
+          IntusNavy: "#062D8F",
+        },
+        grayscale:{
+          White: "#FFFFFF",
+          OffWhite: "#E5E5E5",
+          InputBlack: "#F1F2F3",
+          Labels: "#97999B",
+          Body: "#626275",
+          Black: "#000000",
+        }
       },
     },
   },
