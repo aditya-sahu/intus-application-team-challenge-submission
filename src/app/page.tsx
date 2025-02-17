@@ -1,34 +1,34 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { participants as data } from "@/../constants/data"; // Import data from constants
 import { Diagnosis, Participant } from "@/app/types/participant";
 import { CodeDiagnosis } from "@/app/types/codeDiagnosis";
+
 // Simulated API fetch function for additional details
 const fetchParticipantDetails = async (diagnoses: Diagnosis[] = []) => {
   let resp: CodeDiagnosis[] = [];
   let i: number = 0;
-  // Replace with your actual API call
+  
   try {
     const getFormattedData = async () => {
-      await Promise.all(diagnoses.map(async ele => {
+      await Promise.all(diagnoses.map(async (ele) => {
         const url: string = `https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code%2Cname&terms=${ele.icdCode}`;
         const data = await fetch(url);
         const dataJson = await data.json();
-        //console.log(ele);
-        //console.log(dataJson);
         const size = dataJson.length;
+        
         for (const codeDesc of dataJson[size - 1]) {
           resp.push({ id: i, icdCode: codeDesc[0], description: codeDesc[1] });
-          i++
+          i++;
         }
         return resp;
       }));
-    }
+    };
+    
     await getFormattedData();
     return resp;
-  }
-  catch (err) {
-
+  } catch (err) {
+    console.error("Error fetching participant details:", err);
   }
 };
 
@@ -42,26 +42,20 @@ export default function Participants() {
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [participantDetails, setParticipantDetails] = useState<CodeDiagnosis[]>([]);
 
-  // Filter and sort participants
+  // Reset to first page whenever search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Filter participants based on search term
   const filteredParticipants = participants.filter((participant) =>
     `${participant.firstName} ${participant.lastName}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
 
-
-  // Handle sorting logic
-  const handleSort = (column: "name" | "icdCount") => {
-    if (sortBy === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(column);
-      setSortDirection("asc"); // Reset to ascending when changing column
-    }
-  };
-
   // Sorting logic based on selected column
-  const sortedParticipants = filteredParticipants.sort((a, b) => {
+  const sortedParticipants = [...filteredParticipants].sort((a, b) => {
     if (sortBy === "icdCount") {
       const countA = a.diagnoses.length;
       const countB = b.diagnoses.length;
@@ -73,17 +67,19 @@ export default function Participants() {
     }
   });
 
-
+  // Get current participants after filtering and sorting
   const indexOfLastParticipant = currentPage * participantsPerPage;
   const indexOfFirstParticipant = indexOfLastParticipant - participantsPerPage;
-  const currentParticipants = sortedParticipants.slice(
-    indexOfFirstParticipant,
-    indexOfLastParticipant
-  );
+  const currentParticipants = sortedParticipants.slice(indexOfFirstParticipant, indexOfLastParticipant);
 
   // Handle sorting
-  const toggleSortDirection = () => {
-    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  const handleSort = (column: "name" | "icdCount") => {
+    if (sortBy === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(column);
+      setSortDirection("asc");
+    }
   };
 
   // Handle pagination
@@ -106,8 +102,6 @@ export default function Participants() {
 
   return (
     <div className="p-10">
-
-      {/* Conditional rendering based on selection */}
       {selectedParticipant ? (
         <>
           <div className="p-5">
@@ -119,31 +113,28 @@ export default function Participants() {
             </button>
           </div>
           <div className="bg-white shadow-xl rounded-xl p-5">
-
-
-            <h2 className="font-semibold text-lg">{selectedParticipant.firstName} {selectedParticipant.lastName}</h2>
-            <hr ></hr>
-            {/* Display participant ICD details in card format */}
+            <h2 className="font-semibold text-lg">
+              {selectedParticipant.firstName} {selectedParticipant.lastName}
+            </h2>
+            <hr />
             <div className="mt-4">
-              {
-                participantDetails && participantDetails.length > 0 ? (
-                  participantDetails.map((keyval: CodeDiagnosis) => (
-                    <div key={keyval.id} className="flex justify-between items-center bg-gray-50 border border-gray-300 rounded-lg p-4 mb-2">
-                      <span className="text-gray-700 font-semibold">{keyval.description}</span>
-                      <span className="text-blue-600 font-semibold">{keyval.icdCode}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="mt-2 text-gray-500">No ICD details available.</p>
-                )}
+              {participantDetails.length > 0 ? (
+                participantDetails.map((keyval) => (
+                  <div key={keyval.id} className="flex justify-between items-center bg-gray-50 border border-gray-300 rounded-lg p-4 mb-2">
+                    <span className="text-gray-700 font-semibold">{keyval.description}</span>
+                    <span className="text-blue-600 font-semibold">{keyval.icdCode}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="mt-2 text-gray-500">No ICD details available.</p>
+              )}
             </div>
           </div>
         </>
       ) : (
         <>
-          <h2 className="font-semibold text-blue-900 text-2xl">Participants</h2> <br />
-
-          {/* Search input */}
+          <h2 className="font-semibold text-blue-900 text-2xl">Participants</h2>
+          <br />
           <div className="mb-4">
             <input
               type="text"
@@ -157,40 +148,24 @@ export default function Participants() {
             <table className="min-w-full table-auto bg-white border border-gray-300">
               <thead>
                 <tr className="bg-gray-100">
-                  <th
-                    className="px-4 py-2 text-left cursor-pointer font-semibold text-gray-700"
-                    onClick={() => handleSort("name")}
-                  >
+                  <th className="px-4 py-2 text-left cursor-pointer font-semibold text-gray-700" onClick={() => handleSort("name")}>
                     <div className="flex items-center">
                       Participant Name
                       {sortBy === "name" && (
-                        <img
-                          src={sortDirection === "asc" ? "/orderFilter_Up.png" : "/orderFilter_Down.png"}
-                          alt="sort"
-                          className="ml-2 w-4 h-4"
-                        />
+                        <img src={sortDirection === "asc" ? "/orderFilter_Up.png" : "/orderFilter_Down.png"} alt="sort" className="ml-2 w-4 h-4" />
                       )}
                     </div>
                   </th>
-
-                  <th
-                    className="px-4 py-2 text-left cursor-pointer font-semibold text-gray-700 items-center"
-                    onClick={() => handleSort("icdCount")}
-                  >
+                  <th className="px-4 py-2 text-left cursor-pointer font-semibold text-gray-700" onClick={() => handleSort("icdCount")}>
                     <div className="flex items-center">
-                    ICD Codes
-                    {sortBy === "icdCount" && (
-                      <img
-                        src={sortDirection === "asc" ? "/orderFilter_Up.png" : "/orderFilter_Down.png"}
-                        alt="sort"
-                        className="ml-2 w-4 h-4"
-                      />
-                    )}
+                      ICD Codes
+                      {sortBy === "icdCount" && (
+                        <img src={sortDirection === "asc" ? "/orderFilter_Up.png" : "/orderFilter_Down.png"} alt="sort" className="ml-2 w-4 h-4" />
+                      )}
                     </div>
                   </th>
                 </tr>
               </thead>
-
               <tbody>
                 {currentParticipants.length === 0 ? (
                   <tr>
@@ -200,14 +175,8 @@ export default function Participants() {
                   </tr>
                 ) : (
                   currentParticipants.map((participant, index) => (
-                    <tr
-                      key={index}
-                      className="border-b hover:bg-gray-50 cursor-pointer"
-                      onClick={() => handleRowClick(participant)}
-                    >
-                      <td className="px-4 py-2">
-                        {participant.firstName} {participant.lastName}
-                      </td>
+                    <tr key={index} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => handleRowClick(participant)}>
+                      <td className="px-4 py-2">{participant.firstName} {participant.lastName}</td>
                       <td className="px-4 py-2">{participant.diagnoses.length}</td>
                     </tr>
                   ))
@@ -218,23 +187,11 @@ export default function Participants() {
         </>
       )}
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       {!selectedParticipant && (
         <div className="flex justify-center mt-4">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 mx-2 bg-gray-300 rounded-lg disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage * participantsPerPage >= sortedParticipants.length}
-            className="px-4 py-2 mx-2 bg-gray-300 rounded-lg disabled:opacity-50"
-          >
-            Next
-          </button>
+          <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="px-4 py-2 mx-2 bg-gray-300 rounded-lg disabled:opacity-50">Previous</button>
+          <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastParticipant >= sortedParticipants.length} className="px-4 py-2 mx-2 bg-gray-300 rounded-lg disabled:opacity-50">Next</button>
         </div>
       )}
     </div>
