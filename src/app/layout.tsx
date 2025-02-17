@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
-import { Mulish } from "next/font/google";
 import "@/app/ui/_styles/globals.css";
 import Navbar from "@/app/ui/_components/Navbar";
-
-const mulish = Mulish({
-  variable: "--font-mulish", // Custom CSS variable
-  subsets: ["latin"],
-  weight: "700", // Bold weight
-  style: "normal", // Normal style
-});
 
 export const metadata: Metadata = {
   title: "CareHub",

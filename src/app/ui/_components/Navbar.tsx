@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +15,7 @@ const Navbar: React.FC = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="https://intuscare.com/">
-              <img src="/logo_IntusCare.svg" alt="Intus Care Logo" className="h-10" />
+              <Image width={200} height={200} src="/logo_IntusCare.svg" alt="Intus Care Logo" className="h-10" />
             </Link>
           </div>
 

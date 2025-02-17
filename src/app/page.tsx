@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { participants as data } from "@/../constants/data"; // Import data from constants
+import { participants as fetchedParticipantsData } from "@/../constants/data"; // Import data from constants
 import { Diagnosis, Participant } from "@/app/types/participant";
 import { CodeDiagnosis } from "@/app/types/codeDiagnosis";
+import Image from "next/image";
 
-// Simulated API fetch function for additional details
+// Use National Lib of Medicine's Clinial Table Search Service to fetch diagnoses from icdCode
 const fetchParticipantDetails = async (diagnoses: Diagnosis[] = []) => {
-  let resp: CodeDiagnosis[] = [];
+  const resp: CodeDiagnosis[] = [];
   let i: number = 0;
 
   try {
@@ -29,20 +30,22 @@ const fetchParticipantDetails = async (diagnoses: Diagnosis[] = []) => {
     return resp;
   } catch (err) {
     console.error("Error fetching participant details:", err);
+    return resp;
   }
 };
 
 export default function Participants() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc"); // use desc by default
   const [sortBy, setSortBy] = useState<"name" | "icdCount">("icdCount");
-  const [participants, setParticipants] = useState<Participant[]>(data);
+  //const [participants, setParticipants] = useState<Participant[]>(data);
   const [currentPage, setCurrentPage] = useState(1);
-  const participantsPerPage = 10;
+  const participants : Participant[] = fetchedParticipantsData;
+  const participantsPerPage = 10; // it is a constant that can be re-defined by us
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [participantDetails, setParticipantDetails] = useState<CodeDiagnosis[]>([]);
 
-  // Reset to first page whenever search term changes
+  // Reset user view to first page whenever search term changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -157,7 +160,7 @@ export default function Participants() {
                     <div className="flex items-center">
                       Participant Name
                       {sortBy === "name" && (
-                        <img src={sortDirection === "asc" ? "/orderFilter_Up.png" : "/orderFilter_Down.png"} alt="sort" className="ml-2 w-4 h-4" />
+                        <Image width={20} height={20} src={sortDirection === "asc" ? "/orderFilter_Up.png" : "/orderFilter_Down.png"} alt="sort" className="ml-2 w-4 h-4" />
                       )}
                     </div>
                   </th>
@@ -165,7 +168,7 @@ export default function Participants() {
                     <div className="flex items-center">
                       ICD Codes
                       {sortBy === "icdCount" && (
-                        <img src={sortDirection === "asc" ? "/orderFilter_Up.png" : "/orderFilter_Down.png"} alt="sort" className="ml-2 w-4 h-4" />
+                        <Image width={20} height={20} src={sortDirection === "asc" ? "/orderFilter_Up.png" : "/orderFilter_Down.png"} alt="sort" className="ml-2 w-4 h-4" />
                       )}
                     </div>
                   </th>

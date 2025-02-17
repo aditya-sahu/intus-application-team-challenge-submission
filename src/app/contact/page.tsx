@@ -29,7 +29,7 @@ export default function Home() {
           <p className="text-lg text-gray-700 leading-relaxed">
             <Link
               target="_blank"
-              href="https://www.linkedin.com/in/aditya-sahu"
+              href="https://www.linkedin.com/in/adityasahu1511"
               className="flex items-center space-x-2 text-blue-500 hover:text-blue-700"
             >
               <span className="text-xl">🔗</span>
