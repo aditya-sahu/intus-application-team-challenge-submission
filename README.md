@@ -5,7 +5,7 @@ Name: Aditya Sahu (Addy)
 
 University: University of Massachusetts Dartmouth
 
-> Interested in a full-time opportunity with Intus Care.
+**Interested in a full-time opportunity with Intus Care.**
 
 # Submission
 
